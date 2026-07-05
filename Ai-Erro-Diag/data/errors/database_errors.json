@@ -1,0 +1,67 @@
+[
+  {
+    "error_name": "OperationalError: FATAL: role does not exist",
+    "description": "PostgreSQL cannot find the database role (user) specified in the connection string.",
+    "root_cause": "The database role has not been created, or the connection string specifies the wrong username.",
+    "solution": "Create the role: `CREATE ROLE username WITH LOGIN PASSWORD 'password';` or correct the DATABASE_URL environment variable.",
+    "troubleshooting_steps": [
+      "Connect as postgres superuser: `psql -U postgres`.",
+      "List roles: `\\du` in psql.",
+      "Create the missing role: `CREATE ROLE appuser WITH LOGIN PASSWORD 'secret';`.",
+      "Grant necessary privileges: `GRANT ALL ON DATABASE appdb TO appuser;`.",
+      "Update the DATABASE_URL in the .env file."
+    ]
+  },
+  {
+    "error_name": "OperationalError: could not connect to server",
+    "description": "The application cannot establish a TCP connection to the database server.",
+    "root_cause": "The database server is not running, is on a different host/port, or a firewall is blocking the connection.",
+    "solution": "Verify the database server is running. Check the host and port in the connection string. Open the firewall port if needed.",
+    "troubleshooting_steps": [
+      "Check if the database is running: `pg_isready -h localhost -p 5432`.",
+      "Verify the DATABASE_URL host and port are correct.",
+      "Check firewall rules: `ufw status` or cloud security groups.",
+      "Inspect database server logs for connection errors.",
+      "Test connectivity: `telnet <host> <port>`."
+    ]
+  },
+  {
+    "error_name": "IntegrityError: UNIQUE constraint failed",
+    "description": "An INSERT or UPDATE operation violates a unique constraint in the database.",
+    "root_cause": "The application attempted to insert a record with a value that already exists in a column with a UNIQUE constraint.",
+    "solution": "Use INSERT ... ON CONFLICT DO NOTHING or check for existence before inserting. Implement idempotent upsert logic.",
+    "troubleshooting_steps": [
+      "Identify the conflicting column from the error message.",
+      "Query the existing record before inserting.",
+      "Use `INSERT ... ON CONFLICT DO UPDATE` for upsert semantics.",
+      "Add application-level uniqueness checks.",
+      "Review the data pipeline for duplicate record generation."
+    ]
+  },
+  {
+    "error_name": "TimeoutError: QueuePool limit overflow",
+    "description": "SQLAlchemy's connection pool is exhausted; the application cannot obtain a new database connection within the timeout.",
+    "root_cause": "Too many concurrent requests are holding connections, or connections are not being released after use.",
+    "solution": "Ensure all database sessions are closed after use. Increase pool_size and max_overflow. Use connection pooling middleware like PgBouncer.",
+    "troubleshooting_steps": [
+      "Ensure sessions are closed: use `with SessionLocal() as session:`.",
+      "Increase pool_size: `create_engine(..., pool_size=20, max_overflow=10)`.",
+      "Monitor active connections: `SELECT count(*) FROM pg_stat_activity;`.",
+      "Use PgBouncer for connection pooling at scale.",
+      "Profile slow queries and add indexes to reduce connection hold time."
+    ]
+  },
+  {
+    "error_name": "ProgrammingError: relation does not exist",
+    "description": "A query references a table or view that does not exist in the connected database.",
+    "root_cause": "Database migrations have not been run, or the query targets the wrong database schema.",
+    "solution": "Run pending migrations with `alembic upgrade head`. Verify the schema name and database connection.",
+    "troubleshooting_steps": [
+      "Run migrations: `alembic upgrade head`.",
+      "Check the current revision: `alembic current`.",
+      "List tables: `SELECT tablename FROM pg_tables WHERE schemaname='public';`.",
+      "Verify the DATABASE_URL points to the correct database.",
+      "Check the alembic.ini for the correct script_location."
+    ]
+  }
+]

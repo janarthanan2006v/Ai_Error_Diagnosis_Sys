@@ -1,0 +1,67 @@
+[
+  {
+    "error_name": "TypeError: Cannot read properties of undefined",
+    "description": "Attempting to access a property on an undefined or null value in JavaScript.",
+    "root_cause": "The variable is undefined or null at the time of property access. Common in async code where data has not yet been fetched.",
+    "solution": "Use optional chaining (`?.`) and nullish coalescing (`??`). Add null checks before accessing nested properties.",
+    "troubleshooting_steps": [
+      "Use optional chaining: `obj?.property`.",
+      "Add a null guard: `if (obj && obj.property) { ... }`.",
+      "Check the network tab to verify API responses.",
+      "Log the variable before accessing its properties.",
+      "Initialize variables with default values."
+    ]
+  },
+  {
+    "error_name": "ReferenceError: variable is not defined",
+    "description": "A variable is referenced before it is declared or outside its scope.",
+    "root_cause": "The variable is declared inside a block scope with `let`/`const` and accessed outside, or the variable is never declared.",
+    "solution": "Ensure the variable is declared before use. Move declarations to the appropriate scope.",
+    "troubleshooting_steps": [
+      "Check for typos in the variable name.",
+      "Verify the variable is declared in the correct scope.",
+      "Avoid using `var` in favor of `let`/`const`.",
+      "Enable strict mode: `'use strict';`.",
+      "Use ESLint `no-undef` rule to catch undeclared variables."
+    ]
+  },
+  {
+    "error_name": "SyntaxError: Unexpected token",
+    "description": "JavaScript parser encounters an unexpected character or token, indicating a syntax error in the code.",
+    "root_cause": "Malformed JavaScript — missing brackets, commas, quotes, or unsupported syntax for the runtime version.",
+    "solution": "Use a linter such as ESLint to identify and fix syntax errors. Ensure the transpiler (Babel) supports the syntax being used.",
+    "troubleshooting_steps": [
+      "Run ESLint on the file to identify the exact line.",
+      "Check for unmatched brackets, parentheses, or quotes.",
+      "Verify that async/await syntax is supported by the target runtime.",
+      "Use Babel if targeting older browsers.",
+      "Check the browser console for the exact error line."
+    ]
+  },
+  {
+    "error_name": "Promise rejection: Unhandled Promise Rejection",
+    "description": "A rejected Promise is not handled with `.catch()` or a `try/catch` block in an async function.",
+    "root_cause": "An async operation fails and the error propagates without a handler, causing an unhandled rejection warning or crash.",
+    "solution": "Always add `.catch()` to Promise chains or wrap async/await calls in try/catch blocks.",
+    "troubleshooting_steps": [
+      "Add `.catch(error => console.error(error))` to promise chains.",
+      "Wrap `await` calls in `try { } catch (error) { }` blocks.",
+      "Enable Node.js `--unhandled-rejections=throw` flag in development.",
+      "Use a global unhandledRejection event listener for logging.",
+      "Review all async functions for missing error handling."
+    ]
+  },
+  {
+    "error_name": "CORS Error (XMLHttpRequest)",
+    "description": "The browser blocks a cross-origin fetch request because the server does not return the appropriate Access-Control-Allow-Origin header.",
+    "root_cause": "The API server does not include CORS headers in its response, or the allowed origin does not match the frontend's origin.",
+    "solution": "Configure the backend server to include the correct CORS headers. For development, use a proxy in the bundler config.",
+    "troubleshooting_steps": [
+      "Inspect the Network tab in DevTools for the blocked request.",
+      "Verify the server response includes `Access-Control-Allow-Origin`.",
+      "For development, configure a Vite or Webpack proxy.",
+      "Add the frontend origin to the backend's CORS allowlist.",
+      "Ensure preflight OPTIONS requests return 200."
+    ]
+  }
+]

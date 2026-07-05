@@ -1,0 +1,67 @@
+[
+  {
+    "error_name": "422 Unprocessable Entity",
+    "description": "FastAPI returns HTTP 422 when request body validation fails. Pydantic rejects the input because it does not match the declared schema.",
+    "root_cause": "The client sent a request body that fails Pydantic model validation — missing required fields, wrong types, or constraint violations.",
+    "solution": "Review the response body for the `detail` array which lists each validation error. Fix the client payload or relax the Pydantic model constraints with Optional fields and validators.",
+    "troubleshooting_steps": [
+      "Inspect the full 422 response body for the `detail` array.",
+      "Verify the request Content-Type header is `application/json`.",
+      "Ensure all required fields are present in the request body.",
+      "Use `Optional[...]` for fields that may be absent.",
+      "Add Pydantic `field_validator` for custom validation logic."
+    ]
+  },
+  {
+    "error_name": "CORS Error",
+    "description": "Browser blocks requests from the frontend origin to the FastAPI backend because CORS headers are missing or misconfigured.",
+    "root_cause": "The FastAPI app does not include CORSMiddleware, or the allowed origins list does not include the frontend's origin.",
+    "solution": "Add `CORSMiddleware` to the FastAPI application with correct allowed origins, methods, and headers.",
+    "troubleshooting_steps": [
+      "Add `from fastapi.middleware.cors import CORSMiddleware`.",
+      "Call `app.add_middleware(CORSMiddleware, allow_origins=[...], ...)`.",
+      "Set `allow_origins=['*']` for development only.",
+      "Check the browser console for the exact blocked origin.",
+      "Ensure preflight OPTIONS requests are handled."
+    ]
+  },
+  {
+    "error_name": "Dependency Injection Error",
+    "description": "FastAPI cannot resolve a dependency declared in an endpoint function, raising a startup or runtime error.",
+    "root_cause": "A dependency function raises an exception, has an incompatible signature, or depends on a service that is not registered.",
+    "solution": "Ensure all dependency functions have correct type annotations and do not raise unhandled exceptions. Use `Depends()` with compatible return types.",
+    "troubleshooting_steps": [
+      "Check that all `Depends()` functions are importable and callable.",
+      "Wrap dependency functions in try/except to surface hidden errors.",
+      "Verify the dependency return type matches the endpoint parameter type.",
+      "Use `pytest` with `app.dependency_overrides` for isolated testing.",
+      "Enable FastAPI debug mode for detailed startup errors."
+    ]
+  },
+  {
+    "error_name": "Background Task Failure",
+    "description": "A FastAPI BackgroundTask raises an exception silently without returning an error to the client.",
+    "root_cause": "Exceptions inside BackgroundTask are not propagated to the HTTP response. The task fails silently.",
+    "solution": "Wrap background task logic in try/except. Log all exceptions. Use a task queue like Celery or RQ for critical background work.",
+    "troubleshooting_steps": [
+      "Wrap the background task function body in try/except Exception.",
+      "Log all caught exceptions with full tracebacks.",
+      "Check application logs after triggering the endpoint.",
+      "Consider using Celery for reliable background processing.",
+      "Add health monitoring for background tasks."
+    ]
+  },
+  {
+    "error_name": "File Upload Validation Error",
+    "description": "FastAPI rejects an uploaded file because it exceeds the maximum size limit or has an unsupported MIME type.",
+    "root_cause": "The uploaded file is too large or is not of an accepted content type. Validation is missing or incorrect.",
+    "solution": "Add explicit file size checks using `UploadFile.size`. Validate `content_type` before processing. Return HTTP 400 for invalid uploads.",
+    "troubleshooting_steps": [
+      "Read `file.size` after upload and compare to the configured limit.",
+      "Check `file.content_type` against an allowlist.",
+      "Return `HTTPException(status_code=400, detail='...')` for invalid files.",
+      "Set server-level limits in uvicorn or nginx.",
+      "Use `python-multipart` for correct multipart handling."
+    ]
+  }
+]

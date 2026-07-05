@@ -1,0 +1,205 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <meta name="description" content="View your AI error diagnosis results including root cause, fix steps, and PDF report." />
+  <title>Diagnosis Results — ErrorScope AI</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&family=JetBrains+Mono:wght@400;600&display=swap" rel="stylesheet" />
+  <link rel="stylesheet" href="/static/css/main.css" />
+  <link rel="stylesheet" href="/static/css/results.css" />
+</head>
+<body class="results-page">
+
+  <!-- Navigation -->
+  <nav class="navbar" id="navbar">
+    <div class="nav-container">
+      <a href="/" class="nav-brand">
+        <span class="brand-icon">⚡</span>
+        <span>ErrorScope AI</span>
+      </a>
+      <div class="nav-links">
+        <a href="/" class="nav-link">← New Analysis</a>
+        <a href="/docs" target="_blank" class="nav-link">API Docs</a>
+      </div>
+    </div>
+  </nav>
+
+  <!-- No-data fallback -->
+  <div class="no-results" id="no-results" style="display:none;">
+    <div class="container">
+      <div class="empty-state">
+        <div class="empty-icon">🔍</div>
+        <h2>No Diagnosis Found</h2>
+        <p>It looks like you arrived here directly. Please upload a screenshot first.</p>
+        <a href="/" class="btn-primary">Upload Screenshot</a>
+      </div>
+    </div>
+  </div>
+
+  <!-- Results Content -->
+  <main class="results-main" id="results-main" style="display:none;">
+    <div class="container">
+
+      <!-- Results Header -->
+      <div class="results-header">
+        <div class="results-badge">
+          <span class="badge-glow"></span>
+          <span id="report-id-badge">Report ID: ...</span>
+        </div>
+        <h1 class="results-title" id="error-title-display">Error Analysis Complete</h1>
+        <div class="results-actions">
+          <button class="btn-primary" id="download-pdf-btn">
+            <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="vertical-align:middle;margin-right:6px;">
+              <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="7 10 12 15 17 10"/><line x1="12" y1="15" x2="12" y2="3"/>
+            </svg>
+            Download PDF Report
+          </button>
+          <button class="btn-secondary" id="new-analysis-btn" onclick="window.location='/'">
+            New Analysis
+          </button>
+          <button class="btn-secondary" id="view-json-btn">
+            View Raw JSON
+          </button>
+        </div>
+      </div>
+
+      <!-- Confidence Banner -->
+      <div class="confidence-banner" id="confidence-banner">
+        <div class="confidence-bar-container">
+          <div class="confidence-bar" id="confidence-bar"></div>
+        </div>
+        <div class="confidence-info">
+          <span class="confidence-label" id="confidence-label">Confidence</span>
+          <span class="confidence-score" id="confidence-score-display">—</span>
+        </div>
+      </div>
+
+      <!-- Main Grid -->
+      <div class="results-grid">
+
+        <!-- Left Column -->
+        <div class="results-col-left">
+
+          <!-- Error Summary Card -->
+          <div class="result-card" id="card-summary">
+            <div class="card-header-line">
+              <span class="card-icon">📋</span>
+              <h2>Error Summary</h2>
+            </div>
+            <p class="result-text" id="error-summary-text">—</p>
+          </div>
+
+          <!-- Root Cause Card -->
+          <div class="result-card accent-card" id="card-root-cause">
+            <div class="card-header-line">
+              <span class="card-icon">🔍</span>
+              <h2>Root Cause</h2>
+            </div>
+            <p class="result-text" id="root-cause-text">—</p>
+          </div>
+
+          <!-- Recommended Fix Card -->
+          <div class="result-card success-card" id="card-fix">
+            <div class="card-header-line">
+              <span class="card-icon">✅</span>
+              <h2>Recommended Fix</h2>
+            </div>
+            <p class="result-text" id="recommended-fix-text">—</p>
+          </div>
+
+          <!-- Vision Analysis Card -->
+          <div class="result-card" id="card-vision">
+            <div class="card-header-line">
+              <span class="card-icon">👁️</span>
+              <h2>Vision Analysis</h2>
+            </div>
+            <div class="meta-grid" id="vision-meta-grid">
+              <!-- filled by JS -->
+            </div>
+            <div class="stacktrace-container" id="stacktrace-container" style="display:none;">
+              <h4>Stack Trace</h4>
+              <pre class="stacktrace-pre" id="stacktrace-text"></pre>
+            </div>
+          </div>
+
+        </div>
+
+        <!-- Right Column -->
+        <div class="results-col-right">
+
+          <!-- Step-by-Step Solution -->
+          <div class="result-card" id="card-steps">
+            <div class="card-header-line">
+              <span class="card-icon">🛠️</span>
+              <h2>Step-by-Step Solution</h2>
+            </div>
+            <ol class="steps-list" id="steps-list">
+              <!-- filled by JS -->
+            </ol>
+          </div>
+
+          <!-- Prevention Tips -->
+          <div class="result-card" id="card-prevention">
+            <div class="card-header-line">
+              <span class="card-icon">🛡️</span>
+              <h2>Prevention Tips</h2>
+            </div>
+            <ul class="tips-list" id="tips-list">
+              <!-- filled by JS -->
+            </ul>
+          </div>
+
+          <!-- Related Errors -->
+          <div class="result-card" id="card-related">
+            <div class="card-header-line">
+              <span class="card-icon">🔗</span>
+              <h2>Related Errors</h2>
+            </div>
+            <div class="tags-container" id="related-errors-tags">
+              <!-- filled by JS -->
+            </div>
+          </div>
+
+          <!-- Retrieved Knowledge Base Entries -->
+          <div class="result-card" id="card-retrieved">
+            <div class="card-header-line">
+              <span class="card-icon">📚</span>
+              <h2>Knowledge Base Matches</h2>
+            </div>
+            <div id="retrieved-list">
+              <!-- filled by JS -->
+            </div>
+          </div>
+
+        </div>
+      </div>
+
+    </div>
+  </main>
+
+  <!-- JSON Modal -->
+  <div class="modal-overlay" id="json-modal" role="dialog" aria-modal="true" aria-label="Raw JSON Data" style="display:none;">
+    <div class="modal-container">
+      <div class="modal-header">
+        <h3>Raw JSON Response</h3>
+        <button class="modal-close" id="modal-close-btn" aria-label="Close JSON viewer">✕</button>
+      </div>
+      <div class="modal-body">
+        <button class="copy-btn" id="copy-json-btn">Copy JSON</button>
+        <pre class="json-pre" id="json-output"></pre>
+      </div>
+    </div>
+  </div>
+
+  <footer class="footer">
+    <div class="container">
+      <p>ErrorScope AI &copy; 2024 — AI Error Diagnosis System</p>
+      <p class="footer-sub">Built with FastAPI · Gemini Vision · FAISS · ReportLab</p>
+    </div>
+  </footer>
+
+  <script src="/static/js/results.js"></script>
+</body>
+</html>

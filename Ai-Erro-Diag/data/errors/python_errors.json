@@ -1,0 +1,106 @@
+[
+  {
+    "error_name": "ModuleNotFoundError",
+    "description": "Python cannot locate a module that is being imported. This typically occurs when the package is not installed or the PYTHONPATH is misconfigured.",
+    "root_cause": "The required package is missing from the active virtual environment, or the module path is incorrect.",
+    "solution": "Install the missing package with pip: `pip install <package_name>`. Verify the virtual environment is activated and the correct Python interpreter is being used.",
+    "troubleshooting_steps": [
+      "Check if the virtual environment is activated using `which python`.",
+      "Run `pip list` to verify the package is installed.",
+      "Reinstall the package: `pip install <package_name>`.",
+      "If using a monorepo, ensure PYTHONPATH includes the project root.",
+      "Check for typos in the import statement."
+    ]
+  },
+  {
+    "error_name": "AttributeError",
+    "description": "Attempting to access an attribute or method that does not exist on an object. Often caused by typos, incorrect type assumptions, or API changes.",
+    "root_cause": "The object type does not have the accessed attribute, or the attribute was removed/renamed in a library update.",
+    "solution": "Use `dir(obj)` or `help(obj)` to inspect available attributes. Check the library changelog for breaking changes.",
+    "troubleshooting_steps": [
+      "Print the type of the object: `print(type(obj))`.",
+      "Use `dir(obj)` to list available attributes.",
+      "Check for None: `if obj is not None`.",
+      "Review the library version and its changelog.",
+      "Add type hints and use a type checker like mypy."
+    ]
+  },
+  {
+    "error_name": "TypeError",
+    "description": "An operation is applied to an object of inappropriate type, such as calling a non-callable or passing the wrong argument type.",
+    "root_cause": "Mismatched types between expected and actual function arguments, or calling a variable that is not a function.",
+    "solution": "Add type hints to functions and use a linter or type checker. Validate inputs before passing them to functions.",
+    "troubleshooting_steps": [
+      "Read the full traceback to identify the exact call site.",
+      "Use `type()` to inspect objects at runtime.",
+      "Add explicit type checks or assertions.",
+      "Review function signatures and docstrings.",
+      "Run mypy for static type checking."
+    ]
+  },
+  {
+    "error_name": "KeyError",
+    "description": "Accessing a dictionary with a key that does not exist.",
+    "root_cause": "The dictionary does not contain the expected key. Often caused by data inconsistency, misspelled keys, or missing API response fields.",
+    "solution": "Use `dict.get(key, default)` to safely access keys. Validate external data with Pydantic or marshmallow before processing.",
+    "troubleshooting_steps": [
+      "Print the dictionary to inspect its keys.",
+      "Use `.get()` instead of `[]` for safe access.",
+      "Add input validation with Pydantic models.",
+      "Check if the key name contains whitespace or case differences.",
+      "Handle missing keys with explicit defaults."
+    ]
+  },
+  {
+    "error_name": "IndentationError",
+    "description": "Python code has inconsistent or incorrect indentation, typically mixing tabs and spaces.",
+    "root_cause": "Mixing tab and space characters for indentation, or incorrect block indentation.",
+    "solution": "Configure the editor to use 4 spaces for indentation. Run `autopep8` or `black` to auto-format the file.",
+    "troubleshooting_steps": [
+      "Run `python -tt script.py` to detect mixed indentation.",
+      "Use `black` or `autopep8` to reformat the file.",
+      "Configure editor to convert tabs to spaces.",
+      "Check the error line number in the traceback.",
+      "Enable 'Show whitespace characters' in your editor."
+    ]
+  },
+  {
+    "error_name": "RecursionError",
+    "description": "The maximum recursion depth is exceeded, indicating infinite or excessively deep recursive function calls.",
+    "root_cause": "A recursive function lacks a proper base case or the base case is never reached due to a logic error.",
+    "solution": "Add or fix the base case. Consider converting deep recursion to iteration. Increase the recursion limit only as a last resort.",
+    "troubleshooting_steps": [
+      "Add print statements to trace recursive calls.",
+      "Verify the base case condition is correct.",
+      "Use `sys.setrecursionlimit()` cautiously.",
+      "Refactor to an iterative approach.",
+      "Use memoization to avoid redundant recursive calls."
+    ]
+  },
+  {
+    "error_name": "ValueError",
+    "description": "A function receives an argument of the correct type but an inappropriate value.",
+    "root_cause": "Invalid value passed to a function, such as converting a non-numeric string to int.",
+    "solution": "Validate input values before calling functions. Use try/except to handle conversion errors gracefully.",
+    "troubleshooting_steps": [
+      "Print the value before the failing operation.",
+      "Add input validation and type coercion.",
+      "Use try/except ValueError blocks.",
+      "Check data sources for unexpected values.",
+      "Use Pydantic validators for API inputs."
+    ]
+  },
+  {
+    "error_name": "ImportError",
+    "description": "A module exists but a specific name cannot be imported from it.",
+    "root_cause": "The name was removed, renamed, or never existed in the target module version.",
+    "solution": "Check the module documentation for the correct import path. Update or downgrade the package to a compatible version.",
+    "troubleshooting_steps": [
+      "Check the package version: `pip show <package>`.",
+      "Read the module's __init__.py to see exported names.",
+      "Search the package changelog for renamed exports.",
+      "Try importing the parent module and use dot notation.",
+      "Reinstall the package: `pip install --force-reinstall <package>`."
+    ]
+  }
+]
